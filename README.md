@@ -1,7 +1,6 @@
 # PZ GPU FARM
 <img width="1886" height="937" alt="image" src="https://github.com/user-attachments/assets/c9b810b5-27d0-41ec-b6a0-2a0494bd5908" />
 
-
 **Version 1.0.0** · 2026-09-22
 
 [English](README.en.md)
@@ -31,7 +30,7 @@ PZ GPU FARM 分為兩部分：
 
 - Python 3.10+（儀表板為標準函式庫，不必 `pip install`）
 - 各 GPU 電腦提供 dcgm-exporter 相容的 `/metrics`（預設 `http://<IP>:9400/metrics`；可搭配 [pz-nvml-dcgm-exporter](https://github.com/pzman3d/pz-nvml-dcgm-exporter)）
-- 遠端啟動／終止：GPU 電腦需跑 exe-link（`pip install pystray pillow`；打包再加 `pyinstaller`）
+- 遠端啟動／終止：各 GPU 電腦執行編譯好的 `exe-link.exe` 即可（不必裝 Python）
 
 ## 1. 服務端：PZ GPU FARM
 
@@ -43,16 +42,25 @@ start.bat
 
 右上角可切換 **中文 | EN**（預設英文）。用 **GROUP** 分組、**ADD GPU** 加入節點（例如 `http://192.168.1.10:9400/metrics`）。
 
-## 2. 各 GPU 電腦：exe-link
+## 2. 各 GPU 電腦：exe-link.exe
 
-同一台電腦上啟動／終止會直接執行；其他電腦需先跑 exe-link（預設埠 **9091**）。
+編譯完成的 **exe-link.exe** 可在各電腦直接雙擊執行，不必安裝 Python，即可與 PZ GPU FARM 連線互動。
+
+1. 把 `exe-link.exe` 複製到目標 GPU 電腦（任意資料夾）
+2. 雙擊執行；縮小或關閉會收到系統托盤
+3. 預設埠 **9091**（視窗內可改；儀表板上點該節點燈號也可改）
+4. Farm 加入該電腦後，exe-link 燈號變綠即已連上，之後可從網頁啟動／終止該機程式
+
+Windows 防火牆若擋連線，請允許 9091。Farm 與 exe-link 若設了 `GPU_FARM_TOKEN`，兩邊必須相同。與 Farm 同一台電腦時，啟動／終止會直接在本機執行，不必另開 exe-link。
+
+自行編譯（開發機需 Python）：
 
 ```bat
 cd exe-link
 build.bat
 ```
 
-把 `exe-link.exe` 複製到目標電腦後雙擊。或 `run.bat` 用 Python 執行。儀表板上該節點燈號變綠即為在線；點燈號可改 Port。
+產出 `exe-link/exe-link.exe`。或用 `run.bat` 以 Python 執行原始碼。
 
 ## 3. 啟動／終止服務
 
@@ -62,17 +70,9 @@ build.bat
 
 ---
 
-上傳 GitHub 請用 **`public/` 的內容**當儲存庫根目錄。
-
-| 上傳 | 不要上傳 |
-| --- | --- |
-| `README.md`、`README.en.md`、`VERSION`、`.gitignore`、`start.bat` | `data/*.json`（內網 IP、本機路徑） |
-| `server.py`、`batutil.py`、`web/` | `*.exe`（請自行 `build.bat` 或放 Releases） |
-| `exe-link/` 原始碼與 `build.bat` / `run.bat` | `DEL/`、`build/`、`exe-link.json`、帳密權杖 |
-| `data/.gitkeep` | |
-
-`GPU_FARM_PORT` 預設 9090；`GPU_FARM_AGENT_PORT` 預設 9091。可選 `GPU_FARM_TOKEN`（Farm 與 exe-link 需相同）。
-
 ## 贊助 / Sponsor
+
+[paypal.me/pzman3d](https://paypal.me/pzman3d)
+
 
 [paypal.me/pzman3d](https://paypal.me/pzman3d)
