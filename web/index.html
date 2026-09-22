@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PZ GPU FARM</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">PZ</span>
+      <span class="brand-name">GPU FARM</span>
+      <span id="meta" class="meta"></span>
+    </div>
+    <div class="topbar-actions">
+      <div class="lang-switch" role="group" aria-label="Language">
+        <button id="langZh" class="lang-btn" type="button" data-lang="zh">中文</button>
+        <button id="langEn" class="lang-btn active" type="button" data-lang="en">EN</button>
+      </div>
+      <button id="groupBtn" class="ghost-btn" type="button" data-i18n="groupBtn">GROUP</button>
+      <button id="addBtn" class="add-btn" type="button" data-i18n="addGpu">ADD GPU</button>
+    </div>
+  </header>
+
+  <main id="farm" class="farm"></main>
+
+  <div id="overlay" class="overlay" hidden aria-hidden="true">
+    <form id="addForm" class="modal" autocomplete="off">
+      <h2 data-i18n="addNodeTitle">Add GPU node</h2>
+      <p data-i18n="addNodeHint">Enter the DCGM Exporter metrics URL on that PC.</p>
+      <label for="urlInput" data-i18n="metricsUrl">Metrics URL</label>
+      <input
+        id="urlInput"
+        name="url"
+        type="text"
+        placeholder="http://192.168.1.69:9400/metrics"
+        spellcheck="false"
+      />
+      <p id="formError" class="form-error" hidden></p>
+      <div class="modal-actions">
+        <div class="modal-actions-right">
+          <button id="cancelBtn" class="ghost-btn" type="button" data-i18n="cancel">Cancel</button>
+          <button id="submitBtn" class="add-btn" type="submit" data-i18n="add">Add</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div id="serviceOverlay" class="overlay" hidden aria-hidden="true">
+    <form id="serviceForm" class="modal" autocomplete="off">
+      <h2 id="serviceTitle" data-i18n="addService">Add service</h2>
+      <p id="serviceHint" data-i18n="serviceHint">This service only appears on this PC's dashboard.</p>
+      <label for="serviceName" data-i18n="serviceName">Service name</label>
+      <input id="serviceName" name="name" type="text" placeholder="e.g. Ollama / vLLM" maxlength="80" data-i18n-placeholder="serviceNamePh" />
+      <label for="serviceIp" data-i18n="serviceIp">Service IP</label>
+      <input
+        id="serviceIp"
+        name="ip"
+        type="text"
+        placeholder="192.168.1.69:11434"
+        spellcheck="false"
+      />
+      <label for="serviceNote" data-i18n="note">Notes</label>
+      <textarea id="serviceNote" name="note" rows="3" placeholder="What this runs, and who uses it" maxlength="300" data-i18n-placeholder="notePh"></textarea>
+      <label for="startBat" data-i18n="startFile">Start file</label>
+      <div class="bat-row">
+        <input id="startBat" name="start_bat" type="text" placeholder=".bat / .cmd / .exe on this PC" spellcheck="false" data-i18n-placeholder="filePh" />
+        <button id="pickStartBat" class="ghost-btn" type="button" data-i18n="choose">Browse</button>
+      </div>
+      <label for="startArgs" data-i18n="startArgs">Start arguments</label>
+      <input id="startArgs" name="start_args" type="text" placeholder="Optional, e.g. --port 8188" spellcheck="false" maxlength="500" data-i18n-placeholder="startArgsPh" />
+      <label for="stopBat" data-i18n="stopFile">Stop file</label>
+      <div class="bat-row">
+        <input id="stopBat" name="stop_bat" type="text" placeholder=".bat / .cmd / .exe on this PC" spellcheck="false" data-i18n-placeholder="filePh" />
+        <button id="pickStopBat" class="ghost-btn" type="button" data-i18n="choose">Browse</button>
+      </div>
+      <label for="stopArgs" data-i18n="stopArgs">Stop arguments</label>
+      <input id="stopArgs" name="stop_args" type="text" placeholder="Optional, e.g. /f" spellcheck="false" maxlength="500" data-i18n-placeholder="stopArgsPh" />
+      <div id="serviceRunRow" class="service-run-row" hidden>
+        <button id="startBatBtn" class="run-btn start" type="button" data-i18n="start">Start</button>
+        <button id="stopBatBtn" class="run-btn stop" type="button" data-i18n="stop">Stop</button>
+        <span id="serviceRunHint" class="run-hint">Start when offline; Stop runs the close file on that PC.</span>
+      </div>
+      <p id="serviceError" class="form-error" hidden></p>
+      <div class="modal-actions">
+        <button id="serviceDeleteBtn" class="danger-btn" type="button" hidden data-i18n="delete">Delete</button>
+        <div class="modal-actions-right">
+          <button id="serviceCancelBtn" class="ghost-btn" type="button" data-i18n="cancel">Cancel</button>
+          <button id="serviceSubmitBtn" class="add-btn" type="submit">Add</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div id="fileOverlay" class="overlay file-overlay" hidden aria-hidden="true">
+    <div class="modal file-modal">
+      <h2 id="fileTitle" data-i18n="pickFile">Choose BAT / EXE</h2>
+      <p id="fileCwd" class="file-cwd"></p>
+      <div id="fileDrives" class="file-drives"></div>
+      <div id="fileList" class="file-list"></div>
+      <div class="modal-actions">
+        <div class="modal-actions-right">
+          <button id="fileCancelBtn" class="ghost-btn" type="button" data-i18n="cancel">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="agentOverlay" class="overlay" hidden aria-hidden="true">
+    <form id="agentForm" class="modal" autocomplete="off">
+      <h2>pz gpu farm : exe-link</h2>
+      <p id="agentHint" data-i18n="agentHintDefault">Set the exe-link port for this GPU PC.</p>
+      <label for="agentPortInput">Port</label>
+      <div class="bat-row">
+        <input id="agentPortInput" name="port" type="number" min="1" max="65535" step="1" />
+        <button id="agentUpdateBtn" class="add-btn" type="submit" data-i18n="update">Update</button>
+      </div>
+      <p id="agentError" class="form-error" hidden></p>
+      <div class="modal-actions">
+        <div class="modal-actions-right">
+          <button id="agentCancelBtn" class="ghost-btn" type="button" data-i18n="cancel">Cancel</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div id="groupOverlay" class="overlay" hidden aria-hidden="true">
+    <div class="modal group-modal">
+      <h2 data-i18n="groupTitle">Manage groups</h2>
+      <p data-i18n="groupHint">Add a group, then drag to nest or reorder. Drop GPU hosts into a group. Delete a group to ungroup its items.</p>
+      <form id="groupForm" class="group-add" autocomplete="off">
+        <label for="groupNameInput" data-i18n="groupName">Group name</label>
+        <div class="bat-row">
+          <input id="groupNameInput" name="name" type="text" maxlength="80" placeholder="e.g. Studio / Rack" data-i18n-placeholder="groupNamePh" />
+          <button id="groupAddBtn" class="add-btn" type="submit" data-i18n="addGroup">Add group</button>
+        </div>
+      </form>
+      <p id="groupError" class="form-error" hidden></p>
+      <div id="groupTree" class="group-tree"></div>
+      <div class="modal-actions">
+        <div class="modal-actions-right">
+          <button id="groupCancelBtn" class="ghost-btn" type="button" data-i18n="done">Done</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
