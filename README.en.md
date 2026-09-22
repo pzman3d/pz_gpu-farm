@@ -30,7 +30,7 @@ Assign a start/stop `.bat` / `.exe` to each AI service. If a process crashes or 
 
 - Python 3.10+ (the dashboard is stdlib only; no `pip install`)
 - Each GPU PC must expose dcgm-exporter–compatible `/metrics` (default `http://<IP>:9400/metrics`; [pz-nvml-dcgm-exporter](https://github.com/pzman3d/pz-nvml-dcgm-exporter) works)
-- Remote start/stop: run exe-link on that PC (`pip install pystray pillow`; add `pyinstaller` to build the exe)
+- Remote start/stop: run the compiled `exe-link.exe` on each GPU PC (no Python install required)
 
 ## 1. Server: PZ GPU FARM
 
@@ -42,16 +42,25 @@ Default: `http://127.0.0.1:9090`. To change the port, edit `set "PORT=9090"` in 
 
 Switch **中文 | EN** in the top-right (English by default). Use **GROUP** to organize PCs and **ADD GPU** to add a node (e.g. `http://192.168.1.10:9400/metrics`).
 
-## 2. Each GPU PC: exe-link
+## 2. Each GPU PC: exe-link.exe
 
-Start/stop on the same machine as the farm runs locally. Other PCs need exe-link first (default port **9091**).
+The compiled **exe-link.exe** runs on each PC with a double-click—no Python install—and talks directly to PZ GPU FARM.
+
+1. Copy `exe-link.exe` to the GPU PC (any folder)
+2. Double-click it; minimize or close to hide it in the system tray
+3. Default port **9091** (change it in the window, or click the node light on the dashboard)
+4. After you add that PC in the farm, a green exe-link light means it is connected; start/stop files from the browser after that
+
+Allow port 9091 in Windows Firewall if the farm cannot reach it. If `GPU_FARM_TOKEN` is set, it must match on both sides. On the same PC as the farm, start/stop runs locally—exe-link is not required there.
+
+To build it yourself (Python on a dev machine):
 
 ```bat
 cd exe-link
 build.bat
 ```
 
-Copy `exe-link.exe` to the target PC and double-click it. Or run `run.bat` with Python. The node light on the dashboard turns green when it is online; click it to change the port.
+This writes `exe-link/exe-link.exe`. Or use `run.bat` to run the Python source.
 
 ## 3. Start / stop services
 
@@ -60,17 +69,6 @@ In the node wrench panel, pick a `.bat` / `.cmd` / `.exe` on that PC and optiona
 **PIN**: only sorts that service to the front and highlights it. It does not launch anything.
 
 ---
-
-Upload the **contents of `public/`** as the repository root.
-
-| Include | Do not upload |
-| --- | --- |
-| `README.md`, `README.en.md`, `VERSION`, `.gitignore`, `start.bat` | `data/*.json` (LAN IPs, local paths) |
-| `server.py`, `batutil.py`, `web/` | `*.exe` (build with `build.bat`, or attach to Releases) |
-| `exe-link/` sources plus `build.bat` / `run.bat` | `DEL/`, `build/`, `exe-link.json`, tokens |
-| `data/.gitkeep` | |
-
-`GPU_FARM_PORT` defaults to 9090; `GPU_FARM_AGENT_PORT` defaults to 9091. Optional `GPU_FARM_TOKEN` must match on the farm and exe-link.
 
 ## Sponsor
 
