@@ -43,6 +43,8 @@ start.bat
 右上角可切換 **中文 | EN**（預設英文）。用 **GROUP** 分組、**ADD GPU** 加入節點（例如 `http://192.168.1.10:9400/metrics`）。
 
 ## 2. 各 GPU 電腦：exe-link.exe
+<img width="430" height="183" alt="image" src="https://github.com/user-attachments/assets/c1dcf493-e9e4-44bc-8e7f-3e5e470756eb" />
+
 
 編譯完成的 **exe-link.exe** 可在各電腦直接雙擊執行，不必安裝 Python，即可與 PZ GPU FARM 連線互動。
 
