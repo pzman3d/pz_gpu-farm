@@ -1,4 +1,5 @@
 # PZ GPU FARM
+<img width="1886" height="937" alt="image" src="https://github.com/user-attachments/assets/c9b810b5-27d0-41ec-b6a0-2a0494bd5908" />
 
 **Version 1.0.0** · 2026-09-22
 
