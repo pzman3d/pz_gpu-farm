@@ -73,6 +73,3 @@ build.bat
 ## 贊助 / Sponsor
 
 [paypal.me/pzman3d](https://paypal.me/pzman3d)
-
-
-[paypal.me/pzman3d](https://paypal.me/pzman3d)
