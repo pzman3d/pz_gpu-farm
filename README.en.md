@@ -43,6 +43,8 @@ Default: `http://127.0.0.1:9090`. To change the port, edit `set "PORT=9090"` in 
 Switch **中文 | EN** in the top-right (English by default). Use **GROUP** to organize PCs and **ADD GPU** to add a node (e.g. `http://192.168.1.10:9400/metrics`).
 
 ## 2. Each GPU PC: exe-link.exe
+<img width="430" height="183" alt="image" src="https://github.com/user-attachments/assets/53216749-f885-4501-8490-8f7ff286bc6b" />
+
 
 The compiled **exe-link.exe** runs on each PC with a double-click—no Python install—and talks directly to PZ GPU FARM.
 
